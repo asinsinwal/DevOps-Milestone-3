@@ -1,0 +1,13 @@
+- name: Provision Itrust
+  hosts: all
+
+  gather_facts: no
+  pre_tasks:
+    - name: Install Python for Ansible
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      changed_when: False
+      become: yes
+    - setup: # aka gather_facts
+
+  roles:  
+    - trust
