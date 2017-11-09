@@ -11,8 +11,9 @@
     region: us-east-2
   tasks:
 
-    # - name : Install pip
-    #   apt: pkg=python-pip update_cache=yes state=present
+    - name : Install pip
+      apt: pkg=python-pip update_cache=yes state=present
+      become: true
       
     - name: Install boto and boto3
       pip:
@@ -75,6 +76,7 @@
   gather_facts: True
   roles:
     - checkbox
+    # - remote_git
 
 # - name: Terminate instances
 #   hosts: localhost

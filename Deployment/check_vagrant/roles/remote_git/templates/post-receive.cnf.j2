@@ -1,0 +1,3 @@
+#!/bin/sh
+GIT_WORK_TREE=/home/{{ansible_ssh_user}}/Checkbox/checkbox.io/ git checkout -f
+ansible-playbook /home/{{ansible_ssh_user}}/Checkbox/playbook/deploy/deploy_checkbox.yml > /home/{{ansible_ssh_user}}/Checkbox/playbook/deploy/ansible.log 

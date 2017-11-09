@@ -1,5 +1,5 @@
 - name: Deploy Checbox on a VM
-  hosts: all
+  hosts: localhost
   become: true
   gather_facts: no
   pre_tasks:
@@ -12,3 +12,4 @@
 # Run role on a virtual machine
   roles:
     - checkbox
+

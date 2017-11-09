@@ -4,17 +4,11 @@
 # # - name: start mongodb service
 # #   service: name=mongodb state=started
 
-- name: Create checkbox.io home folder where checkbox source files will be placed
-  file:
-    path: "{{checkbox_home_path}}"
-    state: directory
-    mode: u+rwx
-
 # Synchronization using rsync protocol (push)
 - synchronize:
    src: /home/ubuntu/check_vagrant/Checkbox/
    dest: "{{checkbox_home_path}}"
-  # become: no
+  become: no
 
 # - copy:
 #      src: /home/ubuntu/check_vagrant/Checkbox/

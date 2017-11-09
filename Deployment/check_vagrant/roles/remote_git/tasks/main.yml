@@ -1,0 +1,53 @@
+#   - debug:
+#       msg: "Hello"
+# # handlers:
+# # - name: start mongodb service
+# #   service: name=mongodb state=started
+
+- name: Install git
+  apt:
+    pkg: git
+    state: latest
+    update_cache: yes
+
+- name: Create production.git directory on remote
+  file: path={{ checkbox_home_path }}/production.git state=directory
+  become: no
+
+- name: Create checkbox.io directory on remote
+  file: path={{ checkbox_home_path }}/checkbox.io state=directory
+  become: no
+
+- name: Create playbook directory on remote
+  file: path={{ checkbox_home_path }}playbook/deploy state=directory mode=a+rwx
+  become: no
+
+- name: Create bare repo
+  command: git init --bare
+  args:
+    chdir: "{{ checkbox_home_path }}/production.git"
+  become: no
+
+- name: Place post-receive file on remote
+  template:
+    src: templates/post-receive.cnf.j2
+    dest: "{{ checkbox_home_path }}/production.git/hooks/post-receive"
+    mode: u+x
+  become: no
+
+- name: Add ansible in repository
+  apt_repository:
+    repo: ppa:ansible/ansible
+    update_cache: yes
+
+- name: Install ansible
+  apt:
+    pkg: ansible
+    state: latest
+  become: yes
+
+# Synchronization using rsync protocol (push)
+- synchronize:
+   src: templates/deploy
+   dest: "{{ checkbox_home_path }}playbook/"
+  become: no

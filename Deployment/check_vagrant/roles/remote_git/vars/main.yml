@@ -1,0 +1,1 @@
+checkbox_home_path: /home/{{ansible_ssh_user}}/Checkbox/
