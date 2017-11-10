@@ -12,7 +12,7 @@
 
 # Synchronization using rsync protocol (push)
 - synchronize:
-   src: /home/ubuntu/check_vagrant/Checkbox/
+   src: "/home/ubuntu/Checkbox/checkbox.io/"
    dest: "{{checkbox_home_path}}"
   # become: no
 
