@@ -1,0 +1,38 @@
+#   - debug:
+#       msg: "Hello"
+# # handlers:
+# # - name: start mongodb service
+# #   service: name=mongodb state=started
+
+- lineinfile:
+    dest: /etc/ssh/ssh_config
+    insertafter: EOF
+    state: present
+    line: IdentityFile /home/{{ansible_ssh_user}}/.ssh/checkbox_aws_key.pem
+
+- name: Add ansible in repository
+  apt_repository:
+    repo: ppa:chris-lea/redis-server
+    update_cache: yes
+
+- name: Install redis-server
+  apt:
+    pkg: redis-server
+    state: latest
+    update_cache: yes
+
+- name: Place checkbox private key on remote
+  template:
+    src: templates/checkbox_aws_key.pem
+    dest: "/home/{{ansible_ssh_user}}/.ssh/"
+  become: no
+
+- name: Place redis_slave conf file on remote
+  template:
+    src: templates/redis_slave.cnf.j2
+    dest: /etc/redis/redis.conf
+  become: yes
+  
+- service:
+    name: redis-server
+    state: restarted

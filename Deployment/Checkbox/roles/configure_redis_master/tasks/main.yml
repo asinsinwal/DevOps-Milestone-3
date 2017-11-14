@@ -1,0 +1,25 @@
+#   - debug:
+#       msg: "Hello"
+# # handlers:
+# # - name: start mongodb service
+# #   service: name=mongodb state=started
+
+- name: Add ansible in repository
+  apt_repository:
+    repo: ppa:chris-lea/redis-server
+    update_cache: yes
+
+- name: Install redis-server
+  apt:
+    pkg: redis-server
+    state: latest
+    update_cache: yes
+
+- name: Place post-receive file on remote
+  template:
+    src: templates/redis_master.cnf.j2
+    dest: "/etc/redis/redis.conf"
+  
+- service:
+    name: redis-server
+    state: restarted

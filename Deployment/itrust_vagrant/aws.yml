@@ -63,7 +63,6 @@
     - debug:
         msg: "Instances: {{ ec2.instances }}"
       ignore_errors: yes
-      
 
 - name: Configure instance(s)
   hosts: launched

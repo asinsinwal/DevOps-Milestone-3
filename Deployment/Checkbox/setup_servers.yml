@@ -1,0 +1,61 @@
+- name: Setting up servers
+  hosts: localhost
+  user: ubuntu
+  vars:
+    group_name: redis_master
+  tasks:
+
+  - name : Provision aws instance
+    include: aws.yml
+    vars:
+      keypair: checkbox_aws_key
+      instance_type: t2.micro
+      security_group: launch-wizard-2
+      image: ami-43391926
+      region: us-east-2
+
+  - set_fact: redis_master_ip={{ec2.instances[0].public_ip}}
+
+- name: Configure instance(s)
+  hosts: redis_master
+  become: True
+  gather_facts: True
+  roles:
+    - configure_redis_master
+    - checkbox
+
+- name: Setting up servers
+  hosts: localhost
+  user: ubuntu
+  vars:
+    group_name: redis_slave
+  tasks:
+
+  - name : Provision aws instance
+    include: aws.yml
+    vars:
+      keypair: checkbox_aws_key
+      instance_type: t2.micro
+      security_group: launch-wizard-2
+      image: ami-43391926
+      region: us-east-2
+
+  # - name: Add new instance to host group
+  #   add_host:
+  #     hostname: "18.216.231.252"
+  #     groupname: "{{group_name}}"
+  #     ansible_ssh_user: ubuntu
+  #     ansible_ssh_private_key_file: "/home/{{ansible_ssh_user}}/keys/checkbox_aws_key.pem"
+
+- name: Configure instance(s)
+  hosts: redis_slave
+  become: True
+  gather_facts: True
+  vars:
+    redis_master_ip: "{{hostvars.localhost.redis_master_ip}}"
+  tasks:
+    - debug:
+        msg: "{{redis_master_ip}}"
+  roles:
+    - configure_redis_slave
+    - checkbox
