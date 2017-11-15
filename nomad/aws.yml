@@ -34,8 +34,8 @@
 
     - name: Launch instance
       ec2:
-         aws_access_key: AKIAIH3HKF34YODFTDTA
-         aws_secret_key: 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
+         aws_access_key: <<AWS_ACCESS_KEY>>
+         aws_secret_key: <<AWS_SECRET_KEY>>
          key_name: "{{ keypair }}"
          group: "{{ security_group }}"
          instance_type: "{{ instance_type }}"
