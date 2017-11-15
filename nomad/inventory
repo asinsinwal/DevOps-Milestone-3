@@ -1,0 +1,14 @@
+control ansible_host=192.168.33.91 ansible_ssh_user=vagrant ansible_ssh_private_key_file=/home/vagrant/keys/node0.key
+
+[nodes]
+nomad1 nomad_node_role=server consul_node_role=bootstrap consul_client_address=52.14.36.203 ansible_host=52.14.36.203 ansible_user=ubuntu ansible_ssh_private_key_file=itrust_aws_key.pem
+nomad2 nomad_node_role=client consul_node_role=client consul_client_address=13.58.219.165 ansible_host=13.58.219.165 ansible_user=ubuntu ansible_ssh_private_key_file=checkbox_aws_key.pem
+nomad3 nomad_node_role=client consul_node_role=client consul_client_address=18.216.180.54 ansible_host=18.216.180.54 ansible_user=ubuntu ansible_ssh_private_key_file=checkbox_aws_key.pem
+
+[nomad_instances]
+[nomad_instances:children]
+nodes
+
+[consul_instances]
+[consul_instances:children]
+nodes
