@@ -1,0 +1,112 @@
+var http      = require('http');
+var httpProxy = require('http-proxy');
+var exec = require('child_process').exec;
+var request = require("request");
+
+var STABLE = { "name": "STABLE", "ip": 'http://{{production_ip}}:3002/'};
+var NEW  = { "name": "NEW", "ip": 'http://{{canary_ip}}:3002/'};
+
+var TARGET = NEW;
+
+var infrastructure =
+{
+  setup: function()
+  {
+
+    // Proxy.
+    var options = {};
+    var proxy   = httpProxy.createProxyServer(options);
+    var PORT = 3002;
+
+    var percentage = 40;
+    var stagingCount = 0;
+    var stableCount = 0;
+
+    var server  = http.createServer(function(req, res)
+    {
+      var newStagingPercentage = ((stagingCount + 1)/ (stagingCount + stableCount + 1)*100);
+      if (newStagingPercentage <= percentage){
+        //Routing this request to a staging environment would still be less than or equal the required percentage for staging environment
+        //Thus, routing to staging area
+        console.log("Proxy routing requests to "+STABLE.name+" at: "+STABLE.ip);
+        proxy.web( req, res, {target: STABLE.ip } );
+        stagingCount += 1;
+      }else{
+        //Routing this request to a staging environment would exceed the required percentage for staging environment
+        //Thus, routing to staging area
+        console.log("Proxy routing requests to "+NEW.name+" at: "+NEW.ip);
+        proxy.web( req, res, {target: NEW.ip } );
+        stableCount += 1;
+      }
+    });
+    server.listen(PORT);
+
+    console.log("Staging area running at: "+NEW.ip);
+    console.log("Stable version running at: "+STABLE.ip);
+
+    console.log("Proxy running at port: "+PORT);
+    // console.log("Proxy routing requests to "+TARGET.name+" at :"+TARGET.ip);
+    // Launch staging area
+    // exec('forever start --workingDir=../Checkbox/server-side-staging/site ../Checkbox/server-side-staging/site/server.js', function(err, out, code) 
+    // {
+    //   console.log("attempting to launch staging area");
+    //   if (err instanceof Error)
+    //         throw err;
+    //   if( err )
+    //   {
+    //     console.error( err );
+    //   }
+    // });
+
+    // // Launch stable area
+    // exec('forever start --workingDir=../Checkbox/server-side-stable/site --sourceDir=../Checkbox/server-side-stable/site server.js 5060', function(err, out, code) 
+    // {
+    //   console.log("attempting to launch stable area");
+    //   if (err instanceof Error)
+    //         throw err;
+    //   if( err )
+    //   {
+    //     console.error( err );
+    //   }
+    // });
+
+// setInterval(function(){
+//   var options = 
+//   {
+//     url: "http://localhost:3005",
+//   };
+//   request(options, function (error, res, body) {
+//       if (res.statusCode == 500){
+//           console.log('Alert received from Staging area. Switching traffic to Stable version..');
+//           TARGET = STABLE
+//       }
+//   })
+// }, 2000);
+
+//setTimeout
+//var options = 
+//{
+//  url: "http://localhost:8080",
+//};
+//request(options, function (error, res, body) {
+
+  },
+
+  teardown: function()
+  {
+    exec('forever stopall', function()
+    {
+      console.log("infrastructure shutdown");
+      process.exit();
+    });
+  },
+}
+
+infrastructure.setup();
+
+// Make sure to clean up.
+process.on('exit', function(){infrastructure.teardown();} );
+process.on('SIGINT', function(){infrastructure.teardown();} );
+process.on('uncaughtException', function(err){
+  console.error(err);
+  infrastructure.teardown();} );

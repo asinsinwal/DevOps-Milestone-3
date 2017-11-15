@@ -1,5 +1,5 @@
 git_repo: https://github.com/kulkarnisneha/checkbox.io.git
-checkbox_home_path: /home/{{ansible_ssh_user}}/Checkbox/checkbox.io
+checkbox_dest_home_path: /home/{{ansible_ssh_user}}/Checkbox/checkbox.io/
 nginx_sites_path: /etc/nginx/sites-enabled/default
 nginx_config_path: /etc/nginx/nginx.conf
 env_vars:

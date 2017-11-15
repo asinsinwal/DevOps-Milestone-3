@@ -1,2 +1,15 @@
-[nodes]
-18.221.229.239 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=../keys/checkbox_aws_key.pem
+[redis_master]
+13.58.53.213 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/keys/checkbox_aws_key.pem
+[redis_slave]
+18.216.212.151 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/keys/checkbox_aws_key.pem
+[canary]
+18.221.122.214 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/keys/checkbox_aws_key.pem
+[production]
+18.220.176.192 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/keys/checkbox_aws_key.pem
+[proxies]
+18.216.189.11 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/keys/checkbox_aws_key.pem
+[nomad_server]
+18.216.114.181 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/keys/checkbox_aws_key.pem
+[nomad_client]
+18.216.224.148 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/keys/checkbox_aws_key.pem
+13.59.225.85 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/keys/checkbox_aws_key.pem

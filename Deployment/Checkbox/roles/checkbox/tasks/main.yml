@@ -6,14 +6,14 @@
 
 - name: Create checkbox.io home folder where checkbox source files will be placed
   file:
-    path: "{{checkbox_home_path}}"
+    path: "{{checkbox_dest_home_path}}"
     state: directory
     mode: u+rwx
 
 # Synchronization using rsync protocol (push)
 - synchronize:
-   src: "/home/ubuntu/Checkbox/checkbox.io/"
-   dest: "{{checkbox_home_path}}"
+   src: "{{checkbox_src_home_path}}"
+   dest: "{{checkbox_dest_home_path}}"
   # become: no
 
 # - copy:
@@ -101,7 +101,7 @@
 
 - name: NPM Install
   npm:
-    path: "{{checkbox_home_path}}/server-side/site"
+    path: "{{checkbox_dest_home_path}}/server-side/site"
 
 - name: Installing forever.js
   npm:
@@ -119,7 +119,7 @@
   become: no
   shell: forever start server.js
   args:
-    chdir: "{{ checkbox_home_path }}/server-side/site/"
+    chdir: "{{ checkbox_dest_home_path }}/server-side/site/"
   environment: "{{env_vars}}"
   when: "forever_list.stdout.find('server.js') == -1"
 

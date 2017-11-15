@@ -1,0 +1,22 @@
+
+- name: Create production.git directory on remote
+  file: path=/home/{{ansible_ssh_user}}/Canary/ state=directory
+  become: no
+
+- name: Place proxy files on remote
+  template:
+    src: templates/Canary/infrastructure.js.j2
+    dest: /home/{{ansible_ssh_user}}/Canary/infrastructure.js
+  become: no
+
+- name: Place proxy files on remote
+  template:
+    src: templates/Canary/package.json
+    dest: /home/{{ansible_ssh_user}}/Canary/package.json
+  become: no
+
+- name: NPM Install
+  npm:
+    path: "/home/{{ansible_ssh_user}}/Canary/"
+  become: no
+

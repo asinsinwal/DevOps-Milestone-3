@@ -43,6 +43,8 @@
       region: "{{ region }}"
       vpc_subnet_id: subnet-d8fcdba3
       assign_public_ip: yes
+      instance_tags:
+            Name: "{{group_name}}"
   register: ec2
 
 - name: Add new instance to host group
@@ -61,6 +63,14 @@
     timeout: 1000
     state: started
   with_items: "{{ ec2.instances }}"
+
+- name: Add group name to inventory file
+  local_action: lineinfile dest=/home/ubuntu/inventory insertafter=EOF line="[{{ group_name }}]" state=present create=yes
+  with_items: ec2.instances
+
+- name: Add vm to group
+  local_action: lineinfile dest=/home/ubuntu/inventory regexp="{{ item.public_ip }}" insertafter="[{{ group_name }}]" line="{{ item.public_ip }} ansible_ssh_user=ubuntu ansible_ssh_private_key_file=/home/{{ansible_ssh_user}}/keys/{{keypair}}.pem" state=present
+  with_items: ec2.instances
   
 
 # - name: Configure instance(s)
