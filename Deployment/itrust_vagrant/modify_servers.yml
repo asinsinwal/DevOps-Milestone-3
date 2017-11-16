@@ -1,0 +1,12 @@
+- name: Modifying servers
+  hosts: itrust_proxy
+  user: ubuntu
+  become: true
+  vars:
+    - itrust_ip_1: 18.216.0.121
+    - itrust_ip_2: 52.14.159.192
+    - itrust_ip_3: 18.216.212.232
+    - itrust_ip_4: 18.216.224.63
+    - itrust_ip_5: 13.58.238.137
+  roles:  
+    - proxy

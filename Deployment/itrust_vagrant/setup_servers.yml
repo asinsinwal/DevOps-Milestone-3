@@ -1,0 +1,79 @@
+- name: Setting up itrust
+  hosts: localhost
+  user: ubuntu
+  vars:
+    group_name: itrust
+  tasks:
+
+  - name : Provision aws instance
+    include: aws.yml
+    vars:
+      keypair: checkbox_aws_key
+      instance_type: t2.micro
+      security_group: launch-wizard-2
+      image: ami-43391926
+      region: us-east-2
+    with_sequence: start=1 end=5
+
+    # - name: Add new instance to host group
+    #   add_host:
+    #     hostname: 18.216.110.176
+    #     groupname: "{{group_name}}"
+    #     ansible_ssh_user: ubuntu
+    #     ansible_ssh_private_key_file: "/home/{{ansible_ssh_user}}/keys/itrust_aws_key.pem"
+
+    # - name: Add new instance to host group
+    #   add_host:
+    #     hostname: 18.221.216.40
+    #     groupname: "{{group_name}}"
+    #     ansible_ssh_user: ubuntu
+    #     ansible_ssh_private_key_file: "/home/{{ansible_ssh_user}}/keys/itrust_aws_key.pem"
+
+    # - name: Add new instance to host group
+    #   add_host:
+    #     hostname: 18.216.228.107
+    #     groupname: itrust_proxy
+    #     ansible_ssh_user: ubuntu
+    #     ansible_ssh_private_key_file: "/home/{{ansible_ssh_user}}/keys/itrust_aws_key.pem"
+
+- name: Configure itrust
+  hosts: itrust
+  become: True
+  gather_facts: True
+  roles:
+    - itrust
+
+# Itrust Proxy
+- name: Setting up itrust proxy
+  hosts: localhost
+  user: ubuntu
+  vars:
+    group_name: itrust_proxy
+  tasks:
+
+  - name : Provision aws instance
+    include: aws.yml
+    vars:
+      keypair: checkbox_aws_key
+      instance_type: t2.micro
+      security_group: launch-wizard-2
+      image: ami-43391926
+      region: us-east-2
+
+- name: Configure itrust
+  hosts: itrust_proxy
+  become: True
+  gather_facts: false
+  vars:
+    - itrust_ip_1: "{{hostvars.localhost.groups.itrust[0]}}"
+    - itrust_ip_2: "{{hostvars.localhost.groups.itrust[1]}}"
+    - itrust_ip_3: "{{hostvars.localhost.groups.itrust[2]}}"
+    - itrust_ip_4: "{{hostvars.localhost.groups.itrust[3]}}"
+    - itrust_ip_5: "{{hostvars.localhost.groups.itrust[4]}}"
+  tasks:
+    - debug:
+        msg: "{{itrust_ip_1}}"
+    # - debug:
+    #     msg: "{{hostvars.localhost.groups.itrust[0]}}"
+  roles:
+    - proxy

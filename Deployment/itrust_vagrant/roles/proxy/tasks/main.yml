@@ -1,0 +1,33 @@
+
+- name: Create production.git directory on remote
+  file: path=/home/{{ansible_ssh_user}}/Proxy/ state=directory
+  become: no
+
+- name: Place proxy files on remote
+  template:
+    src: templates/Proxy/infrastructure.js.j2
+    dest: /home/{{ansible_ssh_user}}/Proxy/infrastructure.js
+  become: no
+
+- name: Place proxy files on remote
+  template:
+    src: templates/Proxy/package.json
+    dest: /home/{{ansible_ssh_user}}/Proxy/package.json
+  become: no
+
+- name: Import the NodeSource GPG key into apt
+  apt_key: >
+    id=68576280
+    url="https://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0x1655A0AB68576280"
+    validate_certs=False
+
+- name: Add NodeSource deb repository
+  apt_repository: repo='deb https://deb.nodesource.com/node_6.x trusty main' state=present
+
+- name: Install Node.js
+  apt: pkg=nodejs state=installed update_cache=yes
+  
+- name: NPM Install
+  npm:
+    path: "/home/{{ansible_ssh_user}}/Proxy/"
+  become: no
