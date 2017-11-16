@@ -1,13 +1,11 @@
 # DevOps: Milestone 3 - Deploy
 
-### Components - How our milestone meets each requirement. 
-
-* **Screencast:**
-
+### Screencast:
 * Screencast for [Deployment, Infrastructure Upgrade (Redis feature flag), Canary Release](https://www.youtube.com/watch?v=Z7D6MrIOJPU)</br>
 * Screencast for [Infrastructure Upgrade (Nomad Cluster)](https://youtu.be/KVnHJjEi0ws)</br>
 * Screencast for [Rolling Updates](https://youtu.be/baOLIKE9vSQ)</br>
 
+### Components - How our milestone meets each requirement.
 Your production infrastructure and deployment pipeline should support the following properties.
 
 * **Deployment:** Deploy iTrust and checkbox.io to a production environment. Create a git hook on your jenkins server that will trigger a deployment when doing a git push to "production". The deployment needs to occur on actual remote machine (e.g. AWS, droplet, VCL), and not a local VM. The deployment should create and configure the production environment using ansible.
