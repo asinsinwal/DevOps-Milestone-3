@@ -1,0 +1,44 @@
+- hosts: itrust
+  gather_facts: False
+  serial: 1
+  
+  tasks:
+  - name: Stop tomcat using shutdown.sh
+    command: nohup /opt/tomcat9/apache-tomcat-9.0.0.M26/bin/shutdown.sh
+    environment:
+      CATALINA_HOME: "/opt/tomcat9/apache-tomcat-9.0.0.M26"
+      JAVA_HOME: "/usr/lib/jvm/java-8-openjdk-amd64"
+      JRE_HOME: "/usr/lib/jvm/java-8-openjdk-amd64/jre"
+    become: true
+
+  - name: Delete the old war file
+    file:
+      path: /opt/tomcat9/apache-tomcat-9.0.0.M26/webapps/iTrust.war
+      state: absent
+
+   # - name: Remove the old directory
+    #   shell: sudo rm -rf /usr/share/tomcat/webapps/iTrust
+    
+   #Wait for 20 seconds, for service to copy new war file
+  - name: Wait for few seconds
+    pause:
+      seconds: 20
+    
+  - name: Copy the new war file
+    copy: src=/var/lib/jenkins/jobs/Itrust/workspace/iTrust/target/iTrust-23.0.0.war dest=/opt/tomcat9/apache-tomcat-9.0.0.M26/webapps/iTrust.war
+    become: true
+
+  - name: Start tomcat using startup.sh
+    command: nohup /opt/tomcat9/apache-tomcat-9.0.0.M26/bin/startup.sh
+    environment:
+      CATALINA_HOME: "/opt/tomcat9/apache-tomcat-9.0.0.M26"
+      JAVA_HOME: "/usr/lib/jvm/java-8-openjdk-amd64"
+      JRE_HOME: "/usr/lib/jvm/java-8-openjdk-amd64/jre"
+    become: true
+
+  - name: Wait for few seconds
+    pause:
+      seconds: 20
+
+   # - name: Copy new context file
+    #   copy: src=/home/ubuntu/roll/context.xml dest=/usr/share/tomcat/webapps/iTrust/META-INF/context.xml

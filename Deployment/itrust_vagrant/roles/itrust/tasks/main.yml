@@ -75,7 +75,7 @@
 
   # Synchronization using rsync protocol (push)
 - synchronize:
-    src: /home/ubuntu/itrust_vagrant/iTrust/
+    src: /home/ubuntu/itrust_vagrant/iTrust-v23/iTrust/
     dest: /home/ubuntu/iTrust/
 
 # 8. Call script

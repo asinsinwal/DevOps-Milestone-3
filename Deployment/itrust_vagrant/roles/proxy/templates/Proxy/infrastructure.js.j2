@@ -1,0 +1,96 @@
+var http      = require('http');
+var httpProxy = require('http-proxy');
+var exec = require('child_process').exec;
+var request = require("request");
+
+var ipList = ['http://{{itrust_ip_1}}:8080/iTrust', 'http://{{itrust_ip_2}}:8080/iTrust', 'http://{{itrust_ip_3}}:8080/iTrust', 'http://{{itrust_ip_4}}:8080/iTrust', 'http://{{itrust_ip_5}}:8080/iTrust']
+
+// var ipList = ['http://18.221.217.127:8080/iTrust', 'http://18.221.217.19:8080/iTrust', 'http://18.221.219.20:8080/iTrust', 'http://52.14.46.32:8080/iTrust']
+
+var ipIndex = 0;
+var TARGET = ipList[ipIndex];
+
+var infrastructure =
+{
+  setup: function()
+  {
+
+    // Proxy.
+    var options = {};
+    var proxy   = httpProxy.createProxyServer(options);
+    var PORT = 8080;
+
+    var server  = http.createServer(function(req, res)
+    {
+        proxy.web( req, res, {target: TARGET } );
+    });
+    server.listen(PORT);
+
+    console.log("Proxy running at port: "+PORT);
+    console.log("Proxy routing requests to: "+TARGET);
+    // Launch staging area
+    // exec('forever start --workingDir=../Checkbox/server-side-staging/site ../Checkbox/server-side-staging/site/server.js', function(err, out, code) 
+    // {
+    //   console.log("attempting to launch staging area");
+    //   if (err instanceof Error)
+    //         throw err;
+    //   if( err )
+    //   {
+    //     console.error( err );
+    //   }
+    // });
+
+    // // Launch stable area
+    // exec('forever start --workingDir=../Checkbox/server-side-stable/site --sourceDir=../Checkbox/server-side-stable/site server.js 5060', function(err, out, code) 
+    // {
+    //   console.log("attempting to launch stable area");
+    //   if (err instanceof Error)
+    //         throw err;
+    //   if( err )
+    //   {
+    //     console.error( err );
+    //   }
+    // });
+
+setInterval(function(){
+  var options = 
+  {
+    url: TARGET,
+  };
+  request(options, function (error, res, body) {
+      if (!res || res.statusCode == 500){
+          console.log('Production server running updates. Switching to another production server..');
+          ipIndex = (ipIndex+1)%ipIndex
+          TARGET = ipList[ipIndex];
+          console.log("Now, Proxy routing requests to: "+TARGET);
+      }
+  })
+}, 2000);
+
+//setTimeout
+//var options = 
+//{
+//  url: "http://localhost:8080",
+//};
+//request(options, function (error, res, body) {
+
+  },
+
+  teardown: function()
+  {
+    exec('forever stopall', function()
+    {
+      console.log("infrastructure shutdown");
+      process.exit();
+    });
+  },
+}
+
+infrastructure.setup();
+
+// Make sure to clean up.
+process.on('exit', function(){infrastructure.teardown();} );
+process.on('SIGINT', function(){infrastructure.teardown();} );
+process.on('uncaughtException', function(err){
+  console.error(err);
+  infrastructure.teardown();} );
