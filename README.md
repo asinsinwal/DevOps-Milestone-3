@@ -6,7 +6,10 @@
 * Screencast for [Rolling Updates](https://youtu.be/baOLIKE9vSQ)</br>
 
 ### Components - How our milestone meets each requirement.
-Your production infrastructure and deployment pipeline should support the following properties.
+Instructions:</br>
+Environment variables needed for this milestone AWS\_SECRET\_KEY and AWS\_ACCESS\_KEY.</br>
+For Checkbox environment setup: Copy the private key and name it as checkbox\_aws\_key.pem </br>
+For iTrust environment setup: Copy the private key and name it as itrust\_aws\_key.pem </br>
 
 * **Deployment:** Deploy iTrust and checkbox.io to a production environment. Create a git hook on your jenkins server that will trigger a deployment when doing a git push to "production". The deployment needs to occur on actual remote machine (e.g. AWS, droplet, VCL), and not a local VM. The deployment should create and configure the production environment using ansible.
 
@@ -19,4 +22,4 @@ Your production infrastructure and deployment pipeline should support the follow
 * **Rolling Update**. Implement a rolling update deployment strategy for iTrust, where 5 instances of iTrust have been deployed, and each instance of iTrust must be reployed while 4 instances remain operational.
 
 
-* NOTE: We have explained everything in detail, in the screencast.
+* NOTE: We have explained everything in detail, in the screencasts.
